@@ -1,13 +1,12 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
-import tensorflow as tf
+import onnxruntime as ort
 import os
 
-# 1. Page Configuration
 st.set_page_config(page_title="AuthentiCheck AI ✨", page_icon="🦄", layout="centered")
 
-# 2. Aesthetic Candy/Cute Theme CSS
+# Cute Theme CSS
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #FFF0F5 0%, #E6E6FA 100%); }
@@ -35,7 +34,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Team Details Header
+# Header Details
 st.markdown("""
 <div class="academic-header">
     <h4>🤖 Department of Artificial Intelligence</h4>
@@ -45,67 +44,3 @@ st.markdown("""
         <span class="member-tag">⚡ Syed Mohiz (F24607035)</span>
         <span class="member-tag">⭐ Muskan Fatima (F24607031)</span>
     </div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="main-title-box">
-    <h1>🛡️ AuthentiCheck AI 🦄</h1>
-    <p style="color: #778899;">Real Camera vs AI-Generated Deepfake Detector Dashboard</p>
-</div>
-""", unsafe_allow_html=True)
-
-# 4. Asli Model Loading Logic (Cached to prevent memory leak)
-@st.cache_resource
-def load_trained_model():
-    model_path = "authenticheck_model.keras"
-    if os.path.exists(model_path):
-        try:
-            # compile=False load ko bohot kam kar deta hai cloud par
-            return tf.keras.models.load_model(model_path, compile=False)
-        except Exception as e:
-            st.error(f"Model load karne mein error aaya: {e}")
-            return None
-    return None
-
-model = load_trained_model()
-
-# 5. Image Upload & Processing
-uploaded_file = st.file_uploader("✨ Drop your image here...", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="🔮 Image Preview", use_container_width=True)
-    
-    if st.button("🚀 Analyze Pixels Pattern"):
-        if model is None:
-            st.error("Error: 'authenticheck_model.keras' file aapki GitHub repo mein nahi mili ya load nahi ho saki. Pehle file verify karein.")
-        else:
-            with st.spinner("🧠 Model running real-time neural network evaluation..."):
-                # Image preprocessing jo aapne training ke waqt ki thi (64x64 size)
-                img = image.convert('RGB')
-                img = img.resize((64, 64))
-                img_array = np.array(img) / 255.0  # Normalization
-                img_array = np.expand_dims(img_array, axis=0)  # Batch dimension
-                
-                # Real ML Model Prediction
-                prediction = model.predict(img_array)[0][0]
-                
-                # Agar aapka model 0 ko Fake aur 1 ko Real kehta hai:
-                if prediction >= 0.5:
-                    confidence = prediction * 100
-                    st.markdown(f"""
-                    <div class="report-card real-card">
-                        🎉 REAL CAMERA PHOTO DETECTED ✨<br>
-                        <span style="font-size: 16px; opacity: 0.9;">Model Confidence: {confidence:.2f}%</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    confidence = (1 - prediction) * 100
-                    st.markdown(f"""
-                    <div class="report-card fake-card">
-                        🚨 AI-GENERATED / DEEPFAKE DETECTED 🧸<br>
-                        <span style="font-size: 16px; opacity: 0.9;">Model Confidence: {confidence:.2f}%</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                st.balloons()
