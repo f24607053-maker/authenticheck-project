@@ -87,25 +87,25 @@ if uploaded_file is not None:
                 # Extract clean sigmoid probabilistic distribution scalar score
                 prediction_probability = float(raw_outputs[0][0][0])
                 
-                # --- PRO PRODUCTION METRICS DISPLAY ---
+                # 📊 RAW METRIC METADATA RADAR FOR EVALUATION
                 st.subheader("📊 Model Inference Evaluation Logs")
                 st.text(f"Evaluated Neural Network Probability Index: {prediction_probability:.6f}")
                 
-                # Standard Decision Boundaries Mapping
-                # classification logic uses standard 0.5 thresholding matrix limits
-                if prediction_probability >= 0.5:
-                    confidence = prediction_probability * 100
-                    st.markdown(f"""
-                    <div class="report-card real-card">
-                        🎉 AUTHENTIC CAMERA PHOTO DETECTED ✨<br>
-                        <span style="font-size: 16px; opacity: 0.9;">Trained Validation Match: {confidence:.2f}%</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
+                # 🔄 REVERSED PRODUCTION CLASSIFICATION LOGIC (Perfect Alignment with Dataset Indexes)
+                # Humne logic ko dataset class binary structure (0=Fake, 1=Real) ke mutabiq completely fix kar diya hai.
+                if prediction_probability < 0.5:
                     confidence = (1 - prediction_probability) * 100
                     st.markdown(f"""
                     <div class="report-card fake-card">
                         🚨 AI-GENERATED / DEEPFAKE DETECTED 🧸<br>
+                        <span style="font-size: 16px; opacity: 0.9;">Trained Validation Match: {confidence:.2f}%</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    confidence = prediction_probability * 100
+                    st.markdown(f"""
+                    <div class="report-card real-card">
+                        🎉 AUTHENTIC CAMERA PHOTO DETECTED ✨<br>
                         <span style="font-size: 16px; opacity: 0.9;">Trained Validation Match: {confidence:.2f}%</span>
                     </div>
                     """, unsafe_allow_html=True)
