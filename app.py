@@ -6,7 +6,7 @@ import os
 
 st.set_page_config(page_title="AuthentiCheck AI ✨", page_icon="🦄", layout="centered")
 
-# Cute Theme CSS
+# 1. Aesthetic Candy Theme CSS
 st.markdown("""
     <style>
     .stApp { background: linear-gradient(135deg, #FFF0F5 0%, #E6E6FA 100%); }
@@ -34,7 +34,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header Details
+# 2. Academic Header
 st.markdown("""
 <div class="academic-header">
     <h4>🤖 Department of Artificial Intelligence</h4>
@@ -44,3 +44,62 @@ st.markdown("""
         <span class="member-tag">⚡ Syed Mohiz (F24607035)</span>
         <span class="member-tag">⭐ Muskan Fatima (F24607031)</span>
     </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="main-title-box">
+    <h1>🛡️ AuthentiCheck AI 🦄</h1>
+    <p style="color: #778899;">Real Camera vs AI-Generated Deepfake Detector Dashboard</p>
+</div>
+""", unsafe_allow_html=True)
+
+# 3. Real ONNX Model Loading
+@st.cache_resource
+def load_onnx_model():
+    model_path = "authenticheck_model.onnx"
+    if os.path.exists(model_path):
+        return ort.InferenceSession(model_path)
+    return None
+
+session = load_onnx_model()
+
+uploaded_file = st.file_uploader("✨ Drop your image here...", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="🔮 Image Preview", use_container_width=True)
+    
+    if st.button("🚀 Analyze Pixels Pattern"):
+        if session is None:
+            st.error("Error: 'authenticheck_model.onnx' file aapki GitHub repo mein nahi mili!")
+        else:
+            with st.spinner("🧠 Real-time Neural Network inference evaluating mathematical matrices..."):
+                # Exact same preprocessing as dataset training
+                img = image.convert('RGB').resize((64, 64))
+                img_array = np.array(img).astype(np.float32) / 255.0
+                img_array = np.expand_dims(img_array, axis=0)
+                
+                # Asli Model Inference Graph Output
+                input_name = session.get_inputs()[0].name
+                raw_prediction = session.run(None, {input_name: img_array})
+                prediction = float(raw_prediction[0][0][0])
+                
+                # Evaluation based on your authentic weights metric thresholds
+                if prediction >= 0.5:
+                    confidence = prediction * 100
+                    st.markdown(f"""
+                    <div class="report-card real-card">
+                        🎉 AUTHENTIC CAMERA PHOTO DETECTED ✨<br>
+                        <span style="font-size: 16px; opacity: 0.9;">Model Confidence: {confidence:.2f}%</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    confidence = (1 - prediction) * 100
+                    st.markdown(f"""
+                    <div class="report-card fake-card">
+                        🚨 AI-GENERATED / DEEPFAKE DETECTED 🧸<br>
+                        <span style="font-size: 16px; opacity: 0.9;">Model Confidence: {confidence:.2f}%</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                st.balloons()
