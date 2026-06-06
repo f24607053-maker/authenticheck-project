@@ -86,7 +86,7 @@ if uploaded_file is not None:
                 prediction = float(raw_prediction[0][0][0])
                 
                 # Evaluation based on your authentic weights metric thresholds
-                if prediction >= 0.5:
+                if prediction < 0.5:
                     confidence = prediction * 100
                     st.markdown(f"""
                     <div class="report-card real-card">
