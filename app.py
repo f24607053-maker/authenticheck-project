@@ -1,104 +1,46 @@
 import streamlit as st
 import numpy as np
 from PIL import Image
+import tensorflow as tf
+import os
 
-# 1. Cute Page Setup with Tab Title
+# 1. Page Configuration
 st.set_page_config(page_title="AuthentiCheck AI ✨", page_icon="🦄", layout="centered")
 
-# 2. Complete Aesthetic Candy/Cute Custom CSS Theme
+# 2. Aesthetic Candy/Cute Theme CSS
 st.markdown("""
     <style>
-    .stApp {
-        background: linear-gradient(135deg, #FFF0F5 0%, #E6E6FA 100%);
-    }
-    h1, h2, h3, h4, h5, h6, p, span {
-        font-family: 'Comic Sans MS', 'Quicksand', 'Nunito', sans-serif !important;
-    }
+    .stApp { background: linear-gradient(135deg, #FFF0F5 0%, #E6E6FA 100%); }
+    h1, h2, h3, h4, h5, h6, p, span { font-family: 'Comic Sans MS', sans-serif !important; }
     .academic-header {
-        background: rgba(255, 255, 255, 0.85);
-        padding: 20px;
-        border-radius: 20px;
-        box-shadow: 0px 8px 20px rgba(230, 168, 215, 0.3);
-        border: 2px dashed #FFB6C1;
-        margin-bottom: 25px;
+        background: rgba(255, 255, 255, 0.85); padding: 20px; border-radius: 20px;
+        box-shadow: 0px 8px 20px rgba(230, 168, 215, 0.3); border: 2px dashed #FFB6C1; margin-bottom: 25px;
     }
-    .academic-header h4 {
-        color: #FF69B4;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+    .academic-header h4 { color: #FF69B4; font-weight: bold; }
     .member-tag {
-        background: #F0F8FF;
-        color: #4B0082;
-        padding: 5px 12px;
-        border-radius: 15px;
-        display: inline-block;
-        margin: 4px;
-        font-size: 13px;
-        font-weight: bold;
-        border: 1px solid #B0C4DE;
+        background: #F0F8FF; color: #4B0082; padding: 5px 12px; border-radius: 15px;
+        display: inline-block; margin: 4px; font-size: 13px; font-weight: bold; border: 1px solid #B0C4DE;
     }
-    .main-title-box {
-        text-align: center;
-        margin-top: 10px;
-        margin-bottom: 30px;
-    }
-    .main-title-box h1 {
-        color: #6A5ACD;
-        font-size: 42px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
-    .stFileUploader {
-        background: white;
-        padding: 15px;
-        border-radius: 20px;
-        border: 2px dotted #BA55D3 !important;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
-    }
+    .main-title-box { text-align: center; margin-bottom: 30px; }
+    .main-title-box h1 { color: #6A5ACD; font-size: 42px; }
+    .stFileUploader { background: white; padding: 15px; border-radius: 20px; border: 2px dotted #BA55D3 !important; }
     div.stButton > button {
-        background: linear-gradient(45deg, #FF69B4, #BA55D3) !important;
-        color: white !important;
-        font-weight: bold !important;
-        font-size: 18px !important;
-        padding: 12px 30px !important;
-        border-radius: 25px !important;
-        border: none !important;
-        box-shadow: 0px 6px 15px rgba(255, 105, 180, 0.4) !important;
-        transition: all 0.3s ease-in-out !important;
-        width: 100%;
+        background: linear-gradient(45deg, #FF69B4, #BA55D3) !important; color: white !important;
+        font-weight: bold !important; font-size: 18px !important; padding: 12px 30px !important;
+        border-radius: 25px !important; border: none !important; width: 100%;
     }
-    div.stButton > button:hover {
-        transform: scale(1.03) !important;
-        box-shadow: 0px 8px 20px rgba(186, 85, 211, 0.6) !important;
-        background: linear-gradient(45deg, #BA55D3, #FF69B4) !important;
-    }
-    .report-card {
-        padding: 25px;
-        border-radius: 20px;
-        margin-top: 25px;
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        font-size: 24px;
-        box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
-    }
-    .fake-card {
-        background: linear-gradient(135deg, #FF4B6E, #FF7676);
-        border: 2px solid #FF1493;
-    }
-    .real-card {
-        background: linear-gradient(135deg, #11998e, #38ef7d);
-        border: 2px solid #20B2AA;
-    }
+    .report-card { padding: 25px; border-radius: 20px; margin-top: 25px; color: white; font-weight: bold; text-align: center; font-size: 24px; }
+    .fake-card { background: linear-gradient(135deg, #FF4B6E, #FF7676); border: 2px solid #FF1493; }
+    .real-card { background: linear-gradient(135deg, #11998e, #38ef7d); border: 2px solid #20B2AA; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Cute Header Registry Details
+# 3. Team Details Header
 st.markdown("""
 <div class="academic-header">
     <h4>🤖 Department of Artificial Intelligence</h4>
-    <p style="color: #555; margin-bottom: 8px;"><b>Batch:</b> 24 (Section A) | <b>Course:</b> Machine Learning Project</p>
-    <div style="margin-top: 10px;">
+    <p style="color: #555;"><b>Batch:</b> 24 (Section A) | <b>Course:</b> Machine Learning Project</p>
+    <div>
         <span class="member-tag">🌸 Aina Waseeq (F24607053)</span>
         <span class="member-tag">⚡ Syed Mohiz (F24607035)</span>
         <span class="member-tag">⭐ Muskan Fatima (F24607031)</span>
@@ -106,49 +48,64 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Main App Title Block
 st.markdown("""
 <div class="main-title-box">
     <h1>🛡️ AuthentiCheck AI 🦄</h1>
-    <p style="color: #778899; font-size: 16px;">Real Camera vs AI-Generated Deepfake Detector Dashboard</p>
+    <p style="color: #778899;">Real Camera vs AI-Generated Deepfake Detector Dashboard</p>
 </div>
 """, unsafe_allow_html=True)
 
-# Aesthetic Upload Space
-uploaded_file = st.file_uploader("✨ Drop your magical image here...", type=["jpg", "jpeg", "png"])
+# 4. Asli Model Loading Logic (Cached to prevent memory leak)
+@st.cache_resource
+def load_trained_model():
+    model_path = "authenticheck_model.keras"
+    if os.path.exists(model_path):
+        try:
+            # compile=False load ko bohot kam kar deta hai cloud par
+            return tf.keras.models.load_model(model_path, compile=False)
+        except Exception as e:
+            st.error(f"Model load karne mein error aaya: {e}")
+            return None
+    return None
+
+model = load_trained_model()
+
+# 5. Image Upload & Processing
+uploaded_file = st.file_uploader("✨ Drop your image here...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.image(image, caption="🔮 Image Preview Ready for Scanning", use_container_width=True)
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.image(image, caption="🔮 Image Preview", use_container_width=True)
     
     if st.button("🚀 Analyze Pixels Pattern"):
-        with st.spinner("🔮 Magic setup running... Scanning for artificial signatures..."):
-            
-            # Smart Analysis Simulator via Pixel Weights Matrix
-            img_array = np.array(image.resize((64, 64)))
-            pixel_sum = np.sum(img_array)
-            
-            # Deterministic evaluation logic based on image variance
-            prediction_score = float((pixel_sum % 100) / 100.0)
-            
-            if prediction_score >= 0.45:
-                confidence = 78.5 + (prediction_score * 20)
-                st.markdown(f"""
-                <div class="report-card real-card">
-                    🎉 AUTHENTIC CAMERA PHOTO DETECTED ✨<br>
-                    <span style="font-size: 16px; opacity: 0.9;">Confidence Match: {confidence:.2f}%</span>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                confidence = 82.3 + ((1 - prediction_score) * 15)
-                st.markdown(f"""
-                <div class="report-card fake-card">
-                    🚨 AI-GENERATED / DEEPFAKE DETECTED 🧸<br>
-                    <span style="font-size: 16px; opacity: 0.9;">Confidence Match: {confidence:.2f}%</span>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            st.balloons()
+        if model is None:
+            st.error("Error: 'authenticheck_model.keras' file aapki GitHub repo mein nahi mili ya load nahi ho saki. Pehle file verify karein.")
+        else:
+            with st.spinner("🧠 Model running real-time neural network evaluation..."):
+                # Image preprocessing jo aapne training ke waqt ki thi (64x64 size)
+                img = image.convert('RGB')
+                img = img.resize((64, 64))
+                img_array = np.array(img) / 255.0  # Normalization
+                img_array = np.expand_dims(img_array, axis=0)  # Batch dimension
+                
+                # Real ML Model Prediction
+                prediction = model.predict(img_array)[0][0]
+                
+                # Agar aapka model 0 ko Fake aur 1 ko Real kehta hai:
+                if prediction >= 0.5:
+                    confidence = prediction * 100
+                    st.markdown(f"""
+                    <div class="report-card real-card">
+                        🎉 REAL CAMERA PHOTO DETECTED ✨<br>
+                        <span style="font-size: 16px; opacity: 0.9;">Model Confidence: {confidence:.2f}%</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    confidence = (1 - prediction) * 100
+                    st.markdown(f"""
+                    <div class="report-card fake-card">
+                        🚨 AI-GENERATED / DEEPFAKE DETECTED 🧸<br>
+                        <span style="font-size: 16px; opacity: 0.9;">Model Confidence: {confidence:.2f}%</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                st.balloons()
